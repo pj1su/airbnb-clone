@@ -1,6 +1,10 @@
+from django.http import Http404
 from django.shortcuts import render, redirect
-from django.core.paginator import Paginator, EmptyPage
-from django.utils import timezone
+
+# from django.urls import reverse
+
+# from django.core.paginator import Paginator, EmptyPage
+# from django.utils import timezone
 from django.views.generic import ListView
 from . import models
 
@@ -24,4 +28,10 @@ class HomeView(ListView):
 
 
 def room_detail(request, pk):
-    return render(request, "rooms/detail.html")
+    try:
+        room = models.Room.objects.get(pk=pk)
+        return render(request, "rooms/detail.html", {"room": room})
+    except models.Room.DoesNotExist:
+        # return redirect(reverse("core:home"))
+        raise Http404()
+    # 404.html은 자동적으로 404에러가 인식을 하는데 templates파일에 들어있어야 인식 다른 폴더안
