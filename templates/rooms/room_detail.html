@@ -33,5 +33,9 @@
     <li>{{a}}</li>
     {% endfor %}
     </ul>
+    <!-- #23-0-->
+    <div>
+        <a href="{% url 'rooms:edit' room.pk %}" class="btn-link block">Edit Room</a>
+    </div>
 </div>
 {% endblock %}
