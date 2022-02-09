@@ -71,7 +71,7 @@ class Room(core_models.TimeStampedModel):
     city = models.CharField(max_length=80)
     price = models.IntegerField()
     address = models.CharField(max_length=140)
-    guests = models.IntegerField()
+    guests = models.IntegerField(help_text="How many people will be staying?")
     beds = models.IntegerField()
     bedrooms = models.IntegerField()
     baths = models.IntegerField()
@@ -107,3 +107,11 @@ class Room(core_models.TimeStampedModel):
             return round(all_ratings / len(all_reviews), 1)
         else:
             return 0
+
+    def first_photo(self):
+        # print(self.photos.all()[:1])
+        # one ,two, three, four =self.photos.all()[:1] 하면 첫번째 array는 one이런식으로 들어가서 내가 원하는 쿼리셋을 얻어올 수 있다
+        (photo,) = self.photos.all()[
+            :1
+        ]  # 콤마 찍으면 실제로 원하는게 이array 의 첫번째 값이라는걸 알게됨 쿼리셋 아님
+        return photo.file.url

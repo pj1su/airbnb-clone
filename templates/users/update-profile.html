@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block page_name %}
+Update Profile
+{% endblock page_name %}
+
+<!--유저가 맞는지 input형식이 맞는지 검삭 -->
+{% block content %}
+<form method="POST" enctype="multipart/form-data"><!--장고가 인코딩해서 프론트로 보내기때문에 못알아들음 그래서 이 작업을 가능하게해줌 사진,패스워드 변경 등-->
+    {% csrf_token %}
+    {{form.as_p}} #폼이 세로로 나옴
+    <button>Update</button>
+    {{object.login_method}}
+    {% if object.login_method == "password" %}
+    <div>
+    <a href="{% url "users:password" %}">Change Password</a>
+    </div>
+    {% endif %}
+</form>
+{% endblock content %}

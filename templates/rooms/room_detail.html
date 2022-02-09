@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load is_booked i18n %}
 <!--1 block-->
 {% block page_name %}
-    Home
+    {{room.name}}
 {% endblock page_name %}
 <!--2 block-->
 {% block content %}
@@ -10,10 +11,10 @@
     <h3>{{room.description}}</h3>
 </div>
 <div>
-    <h2>By: {{room.host.username}}
-    {% if room.host.superhost %}
-        (superhost)
-    {% endif %}
+    <h2>By: <a href="{{room.host.get_absolute_url}}">{{room.host.username}}</a>
+        {% if room.host.superhost %}
+             (superhost)
+        {% endif %}
     </h2>
     <h3>Amenities</h3>
     <ul>
@@ -26,7 +27,7 @@
     {% for a in room.facility.all %}
     <li>{{a}}</li>
     {% endfor %}
-    </ul>
+    </ul> 
     <h3>House Rules</h3>
     <ul>
     {% for a in room.house_roul.all %}
@@ -37,5 +38,6 @@
     <div>
         <a href="{% url 'rooms:edit' room.pk %}" class="btn-link block">Edit Room</a>
     </div>
+    <a class="btn-link block mb-10">{% trans "Save to Favourites" %}</a>
 </div>
 {% endblock %}

@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% block page_title %}
+{% block page_name %}
     Log In
-{% endblock page_title %}
+{% endblock page_name %}
 
-
+<!--유저가 맞는지 input형식이 맞는지 검삭 -->
 {% block content %}
     <form method="POST" action="{% url "users:login" %}">
         {% csrf_token %}

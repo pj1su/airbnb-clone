@@ -1,5 +1,10 @@
-
-    <a href="{% url "core:home" %}">Nbnb</a>
-    <ul>
-        <li><a href="{% url "users:login" %}">Login</a></li>
+    <ul class="flex items-center text-sm font-medium h-full">
+        {% if user.is_authenticated %}
+        <li class="ml-8 nav_link"><a href="{{user.get_absolute_url}}">Profile</a></li>
+        <li class="ml-8 nav_link"><a href="{% url "users:logout" %}">Log out</a></li>
+        {% else %}
+        <li class="nav_link"><a href="{% url "users:login" %}">Login</a></li>
+        <li class="nav_link"><a href="{% url "users:signup" %}">Sign up</a></li>
+        {% endif %}
     </ul>
+    <!--hover,active는 @apply에 사용안됨 하지만 &:hover{@apply}로하면 가능-->
