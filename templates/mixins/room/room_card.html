@@ -1,0 +1,19 @@
+
+<div class="w-1/4 mb-10 px-2 overflow-hidden">
+    <a href="{% url "rooms:detail" room.pk %}">
+        <div class="w-full h-64 bg-cover bg-center rounded-lg mb-2" style="background-image:url({{room.first_photo}})"></div>
+        <!--img로하면 모서리 둥글게 안돼서 상자안에 넣어서 css추가-->
+        <div class="flex justify-between mb-2 truncate">
+            <div class="w-4/5 overflow-hidden flex items-center">
+                {% if room.host.superhost %}
+                    <span class="mr-2 uppercase font-medium text-xs border border-black text-black rounded py-1 px-1">Superhost</span>
+                {% endif %}
+                <span class="text-sm text-gray-600 block truncate">{{room.city}}, {{room.country.name}}</span>
+            </div>
+                <span class="text-sm flex items-center">
+                <i class="fas fa-star text-red-500 text-xs mr-1"></i> {{room.tatal_rating}}
+                </span>
+        </div>
+        <span class="text-black truncate w-11/12 block">{{room.name}}</span>
+    </a>
+</div>

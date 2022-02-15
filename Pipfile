@@ -10,6 +10,9 @@ pillow = "*"
 django-countries = "*"
 django-seed = "*"
 psycopg2 = "*"
+django-dotenv = "*"
+psycopg2-binary = "*"
+requests = "*"
 
 [dev-packages]
 flake8 = "*"

@@ -140,3 +140,30 @@ AUTH_USER_MODEL = "users.User"
 MEDIA_ROOT = os.path.join(BASE_DIR, "uploads")
 
 MEDIA_URL = "/media/"
+
+# Email Configuration
+
+EMAIL_HOST = "smtp.mailgun.org"
+EMAIL_PORT = "587"
+EMAIL_HOST_USER = os.environ.get("MAILGUN_USERNAME")
+EMAIL_HOST_PASSWORD = os.environ.get("MAILGUN_PASSWORD")
+EMAIL_FROM = "sexy-guy@sandbox5038fcc9ea364edeacd0078920093129.mailgun.org"
+
+# naver Email SMTP
+# 1. 자신의 네이버 메일로 로그인한후.
+# 2. 메일창 좌측하단 환경설정 클릭.
+# 3. pop3/iMAP설정 클릭
+# 4. IMAP/STMP 설정탭 클릭
+# 5. IMAP/STMP 사용함체크후/ 확인 클릭
+# 하시면 세팅은 끝이구요.
+# 하단에 설정에
+# 서버명 포트 정보 있습니다.
+
+# # setting.py Email 설정 naver
+# EMAIL_HOST = "smtp.naver.com"
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = "네이버아이디@naver.com"
+# EMAIL_HOST_PASSWORD = "NAVER_PASSWORD"
+# EMAIL_USE_TLS = True
+# EMAIL_USE_SSL = False
+# EMAIL_FROM = "보내는 아이디@naver.com"

@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect, reverse
 from django.core.paginator import Paginator, EmptyPage
 
 # from django.utils import timezone
-from django.views.generic import ListView, DetailView, UpdateView, CreateView
+from django.views.generic import ListView, DetailView, UpdateView, CreateView, View
 from . import models, forms
 
 # ListView//// class view는 장고가 정해져있는걸 사용 function view는 사용자정의해서 내가 얻고싶은 값 얻어오기 가능
@@ -15,7 +15,7 @@ class HomeView(ListView):
     "HomeView Definition"
 
     model = models.Room
-    paginate_by = 10
+    paginate_by = 12
     paginate_orphans = 5
     ordering = "created"
     context_object_name = "rooms"
@@ -75,30 +75,92 @@ class EditRoomView(UpdateView):
         return room
 
 
-def search(request):
-    country = request.GET.get("country")
+class SearchView(View):
+    def get(self, request):
+        country = request.GET.get("country")
 
-    if country:
-        form = forms.SearchForm(request.GET)
+        if country:
+            form = forms.SearchForm(request.GET)
 
-        if form.is_valid():  # 폼에 에러가 하나도 없다면
-            # print(form.cleaned_data)
-            city = form.cleaned_data("city")
-            country = form.cleaned_data("country")
-            room_type = form.cleaned_data("room_type")
-            price = form.cleaned_data("price")
-            guests = form.cleaned_data("guests")
-            bedrooms = form.cleaned_data("bedrooms")
-            beds = form.cleaned_data("beds")
-            baths = form.cleaned_data("baths")
-            instant_book = form.cleaned_data("instant_book")
-            host = form.cleaned_data("host")
-            amenity = form.cleaned_data("amenity")
-            facility = form.cleaned_data("facility")
-    else:
-        form = forms.SearchForm()
+            if form.is_valid():  # 폼에 에러가 하나도 없다면
+                # print(form.cleaned_data)
+                city = form.cleaned_data.get("city")
+                country = form.cleaned_data.get("country")
+                room_type = form.cleaned_data.get("room_type")
+                price = form.cleaned_data.get("price")
+                guests = form.cleaned_data.get("guests")
+                bedrooms = form.cleaned_data.get("bedrooms")
+                beds = form.cleaned_data.get("beds")
+                baths = form.cleaned_data.get("baths")
+                instant_book = form.cleaned_data.get("instant_book")
+                host = form.cleaned_data.get("host")
+                amenity = form.cleaned_data.get("amenity")
+                facility = form.cleaned_data.get("facility")
 
-    return render(request, "rooms/search.html", {"form": form})
+                filter_args = {}
+                # print(form.cleaned_data)
+                if city != "Anywhere":
+                    filter_args["city__startswith"] = city
+
+                filter_args["country"] = country
+
+                if room_type is not None:
+                    filter_args["room_type"] = room_type
+
+                if price is not None:
+                    filter_args["price__lte"] = price
+
+                if guests is not None:
+                    filter_args["guests__gte"] = guests
+
+                if bedrooms is not None:
+                    filter_args["bedrooms__gte"] = bedrooms
+
+                if beds is not None:
+                    filter_args["beds__gte"] = beds
+
+                if baths is not None:
+                    filter_args["baths__gte"] = baths
+
+                if instant_book is True:
+                    filter_args["instant_book"] = True
+
+                if host is True:
+                    filter_args["host__superhost"] = True
+                # print(filter_args)
+                for amenities in amenity:
+                    filter_args["amenity"] = amenities
+                # print(amenities)
+                # print(amenity, "start")
+                for facilities in facility:
+                    filter_args["facility"] = facilities
+                    # rooms = rooms.filterQ["facility"]=facilities 이걸 Q쿼리로 해보기 그냥하면 오류 ex)filter(Q(<condition_1>) & Q(<condition_2>))
+
+                qs = models.Room.objects.filter(**filter_args).order_by(
+                    "-created"
+                )  # paginator가 어떤 기준을 가지고 정렬할지 몰라서 필터로 무작위로 들고오니까
+
+                paginator = Paginator(qs, 10, orphans=5)
+
+                page = request.GET.get("page", 1)
+
+                rooms = paginator.get_page(page)
+
+                return render(
+                    request, "rooms/search.html", {"form": form, "rooms": rooms}
+                )
+
+        # if len(s_amenities) > 0:
+        #     for s_amenity in s_amenities:
+        #         rooms = rooms.filter(amenity__pk=int(s_amenity))
+
+        # if len(s_facilities) > 0:
+        #     for s_facility in s_facilities:
+        #         rooms = rooms.filter(facility__pk=int(s_facility))
+        else:
+            form = forms.SearchForm()
+
+        return render(request, "rooms/search.html", {"form": form})
 
 
 # form 을 사용하면 GET.get받아온걸 int나boolean으로 안해도 데이터 정리를 해준다
@@ -144,49 +206,6 @@ def search(request):
 #     "amenities": amenities,
 #     "facilities": facilities,
 # }
-
-# filter_args = {}
-
-# if city != "Anywhere":
-#     filter_args["city__startswith"] = city
-
-# filter_args["country"] = country
-
-# if room_type != 0:
-#     filter_args["room_type__pk"] = room_type
-
-# if price != 0:
-#     filter_args["price__lte"] = price
-
-# if guests != 0:
-#     filter_args["guests__gte"] = guests
-
-# if bedrooms != 0:
-#     filter_args["bedrooms__gte"] = bedrooms
-
-# if beds != 0:
-#     filter_args["beds__gte"] = beds
-
-# if baths != 0:
-#     filter_args["baths__gte"] = baths
-
-# if instant is True:
-#     filter_args["instant_book"] = True
-
-# if superhost is True:
-#     filter_args["host__superhost"] = True
-
-# rooms = models.Room.objects.filter(**filter_args)
-
-# if len(s_amenities) > 0:
-#     for s_amenity in s_amenities:
-#         rooms = rooms.filter(amenity__pk=int(s_amenity))
-
-# if len(s_facilities) > 0:
-#     for s_facility in s_facilities:
-#         rooms = rooms.filter(facility__pk=int(s_facility))
-
-# return render(request, "rooms/search.html", {**form, **choices, "rooms": rooms})
 
 
 ########## 13.6"search" nomadcoder commends

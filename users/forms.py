@@ -1,11 +1,14 @@
 from django import forms
 from . import models
+from django.contrib.auth.forms import UserCreationForm
 
 # forms에 자동적으로 에러메세지 보여주는 기능이있다
 class LoginForm(forms.Form):
 
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    email = forms.EmailField(widget=forms.EmailInput(attrs={"placeholder": "Email"}))
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={"placeholder": "Password"})
+    )
 
     # 두 개 다른 field가 서로 관련이 있을 때 확인하는 method
     def clean(self):
@@ -41,30 +44,60 @@ class LoginForm(forms.Form):
     #         pass  # 에러가 2번생기니까 email에 에러메세지 이미 있음
 
 
-class SignUpForm(forms.ModelForm):  # ModelForm은 model에 있는 필드들을 계속 들고오기 번거로울때 쓴다
-    # ModelForm은 clean data , save , unique한 field값을 validate할 수 있다(유저가 맞는지 유저가 존재하는지 등등)
+# class SignUpForm(UserCreationForm):
+# email = forms.EmailField(required=True) or username = EmailField
+# username password만 있어서 확장 UserCreationForm 들어가면 class Meta 있어서 재정의 가능 username쓸거면 email만 넣고 써도됌
+#     class Meta:
+#         model = models.User
+#         fields = ("email",)
+
+
+# def save(self,commit=True):
+#     user = super(CreateUserForm, self).save(commit=False) # 기존의 id와 pw를 저장. commit이 Flase인 이유는 2번 저장하는것 방지.
+#     user.email = self.cleaned_data["email"]
+#     email = self.cleaned_data.get("email")
+#     user.username = email
+#     user.save() or
+#       if commit:
+#         user.save()              # 객체에 대한 모든 정보를 DB에 저장.
+#     return user
+
+
+class SignUpForm(forms.ModelForm):  ## ModelForm은 model에 있는 필드들을 계속 들고오기 번거로울때 쓴다
+    ## ModelForm은 clean data , save , unique한 field값을 validate할 수 있다(유저가 맞는지 유저가 존재하는지 등등)
     class Meta:
         model = models.User
         fields = ("first_name", "last_name", "email")
+        widgets = {
+            "first_name": forms.TextInput(attrs={"placeholder": "First Name"}),
+            "last_name": forms.TextInput(attrs={"placeholder": "Last Name"}),
+            "email": forms.EmailInput(attrs={"placeholder": "Email Name"}),
+        }
 
-    # first_name = forms.CharField(max_length=80)
-    # last_name = forms.CharField(max_length=80)
-    # email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
-    password1 = forms.CharField(widget=forms.PasswordInput, label="Confirm Password")
-    # password는 유저가 가지고있지 않으니 그냥 놔두는거 암호화니까
+    ## first_name = forms.CharField(max_length=80)
+    ## last_name = forms.CharField(max_length=80)
+    ## email = forms.EmailField()
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={"placeholder": "Password"})
+    )
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={"placeholder": "Confirm Password"})
+    )
+    ## password는 유저가 가지고있지 않으니 그냥 놔두는거 암호화니까
 
-    # def clean_email(self): #ModelForm이 email을 clean시키니까
-    #     email = self.cleaned_data.get("email")
-    #     try:
-    #         models.User.objects.get(email=email)
-    #         raise forms.ValidationError("User already exists with that email")
-    #     except models.User.DoesNotExist:
-    #         return email
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        try:
+            models.User.objects.get(email=email)
+            raise forms.ValidationError(
+                "That email is already taken", code="existing_user"
+            )
+        except models.User.DoesNotExist:
+            return email
 
     def clean_password1(
         self,
-    ):  # 위에서 부터 차례대로 clean data하기때문에 맨끝에 있는 passoword1은 clean이 안돼서 나온다 그래서 에러 def clean_passowrd1 으로하면 전부 clean data한다
+    ):  ## 위에서 부터 차례대로 clean data하기때문에 맨끝에 있는 passoword1은 clean이 안돼서 나온다 그래서 에러 def clean_passowrd1 으로하면 전부 clean data한다
         password = self.cleaned_data.get("password")
         password1 = self.cleaned_data.get("password1")
 
@@ -73,21 +106,21 @@ class SignUpForm(forms.ModelForm):  # ModelForm은 model에 있는 필드들을 
         else:
             return password
 
-    # def save(self): ModelForm은 save method도 가지고있다. 하지만 username을 trick해야함
-    #     first_name = self.cleaned_data.get("first_name")
-    #     last_name = self.cleaned_data.get("last_name")
-    #     email = self.cleaned_data.get("email")
-    #     password = self.cleaned_data.get("password")
-    #     password1 = self.cleaned_data.get("password1")
+    ## def save(self): ModelForm은 save method도 가지고있다. 하지만 username을 trick해야함
+    ##     first_name = self.cleaned_data.get("first_name")
+    ##     last_name = self.cleaned_data.get("last_name")
+    ##    email = self.cleaned_data.get("email")
+    ##     password = self.cleaned_data.get("password")
+    ##     password1 = self.cleaned_data.get("password1")
 
-    #     ## models.User.objects.create() 암호화된 비밀번호를 저장할 수 없음.(생 데이터를 저장함)
-    #     user = models.User.objects.create_user(email, email, password)
-    #     user.first_name = first_name
-    #     user.last_name = last_name
-    #     user.save()
+    ##     ## models.User.objects.create() 암호화된 비밀번호를 저장할 수 없음.(생 데이터를 저장함)
+    ##     user = models.User.objects.create_user(email, email, password)
+    ##     user.first_name = first_name
+    ##     user.last_name = last_name
+    ##     user.save()
     def save(self, *args, **kwargs):
-        # django save method overrid 내가 원하는대로 세이브 하기위해 자동으로 저장하면 username password가 없어도 저장되서
-        # save(commit=False)를 적용한다면 django object는 생성되지만 object는 데이터베이스에 올라가지 않음
+        ## django save method overrid 내가 원하는대로 세이브 하기위해 자동으로 저장하면 username password가 없어도 저장되서
+        ## save(commit=False)를 적용한다면 django object는 생성되지만 object는 데이터베이스에 올라가지 않음
         user = super().save(
             commit=False
         )  # Call the real save() method 유저는 만들지만 저장하지말라 field에 있는 인스턴트들만 저장을 하기때문에 commit False로 인스턴스는 저장된 user을 만듬 그 후에 패스워드와 유저네임을 저장
