@@ -12,6 +12,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.decorators import login_required
 
 # authenticate는 username이 필요하기때문에 username을 email이랑 같이 관리자패널에서 바꾸고 로그인
 from . import forms
@@ -56,6 +57,15 @@ class LoginView(mixins.LoggedOutOnlyView, FormView):
         if user is not None:
             login(self.request, user)
         return super().form_valid(form)
+
+    def get_success_url(self):  # url에서 검색해서 로그인페이지로 왔을때 로그인후 내가 쳤었던 url로 바로 이동하기위한 로직
+        next_arg = self.request.GET.get("next")
+        if next_arg is not None:
+            return next_arg
+        else:
+            return reverse("core:home")
+
+    # reverse_lazy는 Attributes일때 쓰고 fuction일땐 안써도됨
 
 
 def log_out(request):  # class LogouView도 있음 document
@@ -304,7 +314,10 @@ class UpdateUserView(mixins.LoggedInOnlyView, SuccessMessageMixin, UpdateView):
 
 
 class UpdatePasswordView(
-    mixins.LoggedInOnlyView, SuccessMessageMixin, PasswordChangeView
+    mixins.LoggedInOnlyView,
+    mixins.EmailLoginOnlyView,
+    SuccessMessageMixin,
+    PasswordChangeView,
 ):
     # pass 만 놔둔채 실행하면 비밀변호변경페이지를 어드민페이지로 넘기기때문에 조정필요
     template_name = "users/update-password.html"
@@ -320,3 +333,28 @@ class UpdatePasswordView(
 
     def get_success_url(self):  # logic이 필요할땐 메소드 사용
         return self.request.user.get_absolute_url()
+
+
+# @login_required
+# def start_hosting(request):
+#     request.session["is_hosting"] = True
+#     return redirect(reverse("core:home"))
+
+
+# @login_required
+# def stop_hosting(request):
+## request.session.pop["is_hosting"] = True
+#     try:
+#         del request.session["is_hosting"]
+#     except KeyError:
+#         pass
+#     return redirect(reverse("core:home"))
+
+
+@login_required
+def switch_hosting(request):
+    try:
+        del request.session["is_hosting"]
+    except KeyError:
+        request.session["is_hosting"] = True
+    return redirect(reverse("core:home"))

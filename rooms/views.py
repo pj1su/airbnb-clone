@@ -1,12 +1,24 @@
 from django_countries import countries
 from django.http import Http404
 from django.shortcuts import render, redirect, reverse
+from django.urls import reverse_lazy
 
 # from django.urls import reverse
 from django.core.paginator import Paginator, EmptyPage
+from users import mixins as user_mixins
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 
 # from django.utils import timezone
-from django.views.generic import ListView, DetailView, UpdateView, CreateView, View
+from django.views.generic import (
+    ListView,
+    DetailView,
+    UpdateView,
+    CreateView,
+    View,
+    FormView,
+)
 from . import models, forms
 
 # ListView//// class view는 장고가 정해져있는걸 사용 function view는 사용자정의해서 내가 얻고싶은 값 얻어오기 가능
@@ -45,27 +57,27 @@ class RoomDetail(DetailView):
     model = models.Room
 
 
-class EditRoomView(UpdateView):
+class EditRoomView(user_mixins.LoggedInOnlyView, UpdateView):
     model = models.Room
     template_name = "rooms/room_edit.html"
     fields = (
-        "name"
-        "description"
-        "country"
-        "price"
-        "city"
-        "address"
-        "guests"
-        "beds"
-        "bedrooms"
-        "baths"
-        "check_in"
-        "check_out"
-        "instant_book"
-        "room_type"
-        "amenity"
-        "facility"
-        "house_roul"
+        "name",
+        "description",
+        "country",
+        "price",
+        "city",
+        "address",
+        "guests",
+        "beds",
+        "bedrooms",
+        "baths",
+        "check_in",
+        "check_out",
+        "instant_book",
+        "room_type",
+        "amenity",
+        "facility",
+        "house_roul",
     )
 
     def get_object(self, queryset=None):
@@ -73,6 +85,81 @@ class EditRoomView(UpdateView):
         if room.host.pk != self.request.user.pk:
             raise Http404()
         return room
+
+
+class RoomPhotoView(user_mixins.LoggedInOnlyView, DetailView):
+
+    model = models.Room
+    template_name = "rooms/room_photos.html"
+
+    def get_object(self, queryset=None):
+        room = super().get_object(queryset=queryset)
+        if room.host.pk != self.request.user.pk:
+            raise Http404()
+        return room
+
+
+@login_required  # 이 데코레이터는 setting에서 login url설정을 해야함
+def delete_photo(request, room_pk, photo_pk):
+    user = request.user
+    try:
+        room = models.Room.objects.get(pk=room_pk)
+        photo = models.Photo.objects.get(pk=photo_pk)
+        if room.host.pk != user.pk or room.pk != photo.room.pk:
+            messages.error(request, "Can't delete that photo")
+            return redirect(reverse("core:home"))
+        else:
+            models.Photo.objects.filter(pk=photo_pk).delete()
+            messages.success(request, "Photo Delete")
+        return redirect(reverse("rooms:photos", kwargs={"pk": room_pk}))
+    except models.Room.DoesNotExist:
+        return redirect(reverse("core:home"))
+
+
+class EditPhotoView(user_mixins.LoggedInOnlyView, SuccessMessageMixin, UpdateView):
+
+    model = models.Photo
+    template_name = "rooms/photo_edit.html"
+    pk_url_kwarg = "photo_pk"
+    success_message = "Photo Update"
+    fields = ("caption",)
+
+    def get_object(self, queryset=None):
+        photo = super().get_object(queryset=queryset)
+        if photo.room.host.pk != self.request.user.pk:
+            raise Http404()
+        return photo
+
+    def get_success_url(self):
+        room_pk = self.kwargs.get("room_pk")
+        return reverse("rooms:photos", kwargs={"pk": room_pk})
+
+
+class AddphotoView(user_mixins.LoggedInOnlyView, SuccessMessageMixin, FormView):
+
+    template_name = "rooms/photo_create.html"
+    form_class = forms.CreatePhotoForm
+    # SuccessMessageMixin에는 from_valid , get_success_message가 있어서 messages를 써야함
+    def form_valid(self, form):
+        pk = self.kwargs.get("pk")
+        form.save(pk)
+        messages.success(self.request, "Photo Upload")
+        return redirect(reverse("rooms:photos", kwargs={"pk": pk}))
+
+
+class CreateRoomView(user_mixins.LoggedInOnlyView, FormView):
+
+    form_class = forms.CreateRoomForm
+    template_name = "rooms/room_create.html"
+
+    def form_valid(self, form):
+        room = form.save()
+        room.host = self.request.user
+        room.save()
+        # save m2m은 object가 database에 저장된 후에 사용해야함
+        form.save_m2m()
+        messages.success(self.request, "Create Room")
+        return redirect(reverse("rooms:detail", kwargs={"pk": room.pk}))
 
 
 class SearchView(View):

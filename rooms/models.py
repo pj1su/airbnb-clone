@@ -2,6 +2,8 @@ from django.db import models
 from django_countries.fields import CountryField
 from core import models as core_models
 from django.urls import reverse
+from cal import Calender
+from django.utils import timezone
 
 
 class AbstractItem(core_models.TimeStampedModel):
@@ -66,7 +68,7 @@ class Room(core_models.TimeStampedModel):
     """ Room Model Definiton """
 
     name = models.CharField(max_length=140)
-    description = models.TextField()
+    description = models.TextField(max_length=140)
     country = CountryField()
     city = models.CharField(max_length=80)
     price = models.IntegerField()
@@ -111,7 +113,40 @@ class Room(core_models.TimeStampedModel):
     def first_photo(self):
         # print(self.photos.all()[:1])
         # one ,two, three, four =self.photos.all()[:1] 하면 첫번째 array는 one이런식으로 들어가서 내가 원하는 쿼리셋을 얻어올 수 있다
-        (photo,) = self.photos.all()[
-            :1
-        ]  # 콤마 찍으면 실제로 원하는게 이array 의 첫번째 값이라는걸 알게됨 쿼리셋 아님
-        return photo.file.url
+        try:
+            (photo,) = self.photos.all()[:1]
+            # 콤마 찍으면 실제로 원하는게 이array 의 첫번째 값이라는걸 알게됨 쿼리셋 아님
+            return photo.file.url
+        except ValueError:
+            return None
+
+    def get_next_four_photos(self):
+        photos = self.photos.all()[1:5]
+        return photos
+
+    # def get_beds(self):
+    #     if self.beds == 1:
+    #         return "1 bed"
+    #     else:
+    #         return f"{self.beds} beds"
+
+    def get_calender(self):
+        now = timezone.now()
+        this_year = now.year
+        this_month = now.month
+        next_month = this_month + 1
+        this_month_cal = Calender(this_year, this_month)
+        if this_month == 12:
+            next_month = 1
+            this_year += 1
+        next_month_cal = Calender(this_year, next_month)
+        return [this_month_cal, next_month_cal]
+
+        # if this_month != 12:
+        #     this_year
+        # else:
+        #     this_year + 1
+        # if this_month != 12:
+        #     this_month + 1
+        # else:
+        #     1
