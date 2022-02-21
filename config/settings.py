@@ -169,3 +169,7 @@ LOGIN_URL = "/users/login"
 # EMAIL_USE_TLS = True
 # EMAIL_USE_SSL = False
 # EMAIL_FROM = "보내는 아이디@naver.com"
+
+#Locale
+
+LOCALE_PATHS = (os.path.join(BASE_DIR,"locale"),) # list여야해서 튜플로줌
