@@ -17,7 +17,8 @@
                 <h4 class="text-3xl font-medium mb-px">{{room.name}}</h4>
                 <span class="text-gray-700 font-light">{{room.city}}</span>
             </div>
-            <a href="{{room.host.get_absolute_url}}" class="flex flex-col items-center"> {% include "mixins/user_avatar.html" with user=room.host %}
+            <a href="{{room.host.get_absolute_url}}" class="flex flex-col items-center"> 
+                {% include "mixins/user_avatar.html" with user=room.host %}
                 <span class="mt-2 text-gray-500">{{room.host.first_name}}</span>
             </a>
         </div>
