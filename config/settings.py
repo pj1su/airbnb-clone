@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = "ymer$6r&rkki8fi8c$5aield7pqhrx-g!=ji11@aif2&84*+2&"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get("DEBUG"))
+DEBUG = True
 
 ALLOWED_HOSTS = "*"
 
@@ -89,7 +89,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 # env는 일라스틱빈스택에 올라가지않아서 aws에서 디버그를 찾으면 false로 찾을것이다 왜냐하면 commit이 되지않아서 deploy는 commit된걸 실행하기때문에
 # env파일은 manage.py로 호출하지만 일라스틱빈스택은 manage.py를 호출하지않는다
-if DEBUG:
+if DEBUG is False:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
