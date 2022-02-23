@@ -11,4 +11,5 @@ urlpatterns = [
     ),
     path("<int:pk>/", views.ReservationDetail.as_view(), name="detail"),
     path("<int:pk>/<str:verb>/", views.edit_reservation, name="edit"),
+    path("list/", views.list_reservaion.as_view(), name="list"),
 ]

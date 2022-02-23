@@ -1,4 +1,6 @@
-{% load static i18n %} <!--번역될 메세지를 만들수 있고 그냥 컴파일 메세지 만들수 있다 makemessage(django-admin makemessages --locale=kr) compilemessage-->
+{% load static i18n %} <!--번역될 메세지를 만들고 컴파일 메세지 할 수 있다 makemessage(django-admin makemessages --locale=kr) compilemessage(django-admin compilemes
+    sages)
+이걸 이용하려면 brew install gettext , brew link gettext --force해야함-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -31,7 +33,14 @@
         
         
         {% include "partials/footer.html" %}
-        
+        <script>
+            const langSelect = document.getElementById("js-lang");
+            const handleLangChange = () => {
+                const selected = langSelect.value;
+                fetch(`{% url 'users:switch-language' %}?lang=${selected}`).then(() => window.location.reload());
+            }
+            langSelect.addEventListener("change",handleLangChange);
+        </script>
 </body>
 
 </html>

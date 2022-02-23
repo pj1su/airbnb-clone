@@ -4,9 +4,10 @@ from django.shortcuts import render
 from . import models
 from rooms import models as room_models
 from django.shortcuts import redirect, reverse
-from django.views.generic import View
+from django.views.generic import View, ListView
 from django.http import Http404
 from reviews import forms as review_form
+from rooms import models as room_models
 
 
 class CreateError(Exception):
@@ -54,7 +55,7 @@ def edit_reservation(request, pk, verb):
     if not reservation or (
         reservation.guest != request.user and reservation.host != self.request.user
     ):
-        raise Http404
+        raise Http404()
     if verb == "confirm":
         reservation.status = models.Reservation.STATUS_CONFIRMED
     elif verb == "cancel":
@@ -63,3 +64,9 @@ def edit_reservation(request, pk, verb):
     reservation.save()
     messages.success(request, "Reservation Updated")
     return redirect(reverse("reservations:detail", kwargs={"pk": reservation.pk}))
+
+
+class list_reservaion(ListView):
+    model = models.Reservation
+    template_name = "reservations/list.html"
+    context_object_name = "reservation"

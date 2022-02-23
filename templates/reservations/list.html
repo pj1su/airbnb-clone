@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block page_name %}
+    Reservation list}}
+{% endblock page_name %}
+
+{% block search-bar %}
+{% endblock search-bar %}
+
+
+{% block content %}
+
+    {% for room in user.rooms.all %}
+        <div class="font-medium">{{room.name}}</div>
+        {% for list in reservation %}
+            <div>{{list.check_in}}-{{list.status}} {% if list.is_finished %}<span class="text-teal-400 font-medium">완료된 예약</span>{% else %}<span class="font-medium">진행중</span>{% endif %}</div>
+        {% endfor %}
+    {% endfor %}
+
+{% endblock content %}
+
+
+
+
+
+
+
+{% comment %} 
+
+{% for room in user.rooms.all %}
+    {{room.name}}
+    {% for list in room.reservation.all %}
+        {{list}}
+    {% endfor %}
+{% endfor %} {% endcomment %}

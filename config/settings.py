@@ -61,8 +61,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
 ]
-
+# translation을 실행하기 위해선 미들웨어에 LocalMiddleware사용
 ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
@@ -170,6 +171,9 @@ LOGIN_URL = "/users/login"
 # EMAIL_USE_SSL = False
 # EMAIL_FROM = "보내는 아이디@naver.com"
 
-#Locale
+# Locale
 
-LOCALE_PATHS = (os.path.join(BASE_DIR,"locale"),) # list여야해서 튜플로줌
+LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)  # list여야해서 튜플로줌
+
+# Language
+LANGUAGE_COOKIE_NAME = "django_language"

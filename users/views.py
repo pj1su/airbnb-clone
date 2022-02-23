@@ -1,5 +1,7 @@
 import os
 import requests
+from django.utils import translation
+from django.http import HttpResponse
 from django.views import View
 from django.contrib.auth.views import PasswordChangeView
 from django.views.generic import FormView, DetailView, UpdateView
@@ -13,6 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.decorators import login_required
+from config import settings
 
 # authenticate는 username이 필요하기때문에 username을 email이랑 같이 관리자패널에서 바꾸고 로그인
 from . import forms
@@ -358,3 +361,14 @@ def switch_hosting(request):
     except KeyError:
         request.session["is_hosting"] = True
     return redirect(reverse("core:home"))
+
+
+def switch_language(request):
+    lang = request.GET.get("lang", None)
+    if lang is not None:
+        request.session[translation.LANGUAGE_SESSION_KEY] = lang
+        # translation.activate(lang)
+        # response = HttpResponse(200)
+        # response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang)
+    return HttpResponse(200)
+
