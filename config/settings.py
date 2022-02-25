@@ -199,8 +199,8 @@ LANGUAGE_COOKIE_NAME = "django_language"
 if not DEBUG:
     DEFAULT_FILE_STORAGE = "config.custom_storages.UploadStorage"
     STATICFILES_STORAGE = "config.custom_storages.StaticStorage"
-    AWS_ACCESS_KEY_ID = os.environ.get("AWSACCESSKEYID")
-    AWS_SECRET_ACCESS_KEY = os.environ.get("AWSSECRETACCESSKEY")
+    AWS_ACCESS_KEY_ID = "AKIASHPMSRWXEINNXUQJ"
+    AWS_SECRET_ACCESS_KEY = "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"
     AWS_STORAGE_BUCKET_NAME = "elasticbeanstalk-ap-northeast-2-153504353710"
     AWS_DEFAULT_ACL = "public-read"
 
