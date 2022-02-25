@@ -41,7 +41,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-THIRD_PARTY_APPS = ["django_countries", "django_seed"]
+THIRD_PARTY_APPS = ["django_countries", "django_seed", "storages"]
 
 PROJECT_APPS = [
     "core.apps.CoreConfig",
@@ -195,10 +195,20 @@ LOCALE_PATHS = (os.path.join(BASE_DIR, "locale"),)  # list여야해서 튜플로
 LANGUAGE_COOKIE_NAME = "django_language"
 
 # Sentry
-
+# 버킷이름은 어렵게 만들어야함
 if not DEBUG:
+    DEFAULT_FILE_STORAGE = "config.custom_storages.UploadStorage"
+    STATICFILES_STORAGE = "config.custom_storages.StaticStorage"
+    AWS_ACCESS_KEY_ID = os.environ.get("AWSACCESSKEYID")
+    AWS_SECRET_ACCESS_KEY = os.environ.get("AWSSECRETACCESSKEY")
+    AWS_STORAGE_BUCKET_NAME = "elasticbeanstalk-ap-northeast-2-153504353710"
+    AWS_DEFAULT_ACL = "public-read"
+
+    AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.ap-northeast-2.amazonaws.com"
+    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static"
+
     sentry_sdk.init(
-        dsn="https://99aa0977320f4e24ac1cca8a78d9fda5@o1151606.ingest.sentry.io/6231538",
+        dsn=os.environ.get("SENTRY_URL"),
         integrations=[DjangoIntegration()],
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
