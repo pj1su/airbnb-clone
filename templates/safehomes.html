@@ -1,0 +1,30 @@
+{% load static i18n %} <!--번역될 메세지를 만들고 컴파일 메세지 할 수 있다 makemessage(django-admin makemessages --locale=kr) compilemessage(django-admin compilemes
+    sages)
+이걸 이용하려면 brew install gettext , brew link gettext --force해야함-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>safehomes</title>
+</head>
+<body>
+<div class="=max-w-full flex justify-between h-24 items-center">
+    <div class="ml-32 font-bold text-3xl">
+        세이프홈즈
+    </div>
+    <div class="flex text-lg mr-64">
+        <div class="mr-8 bg-green-600 rounded p-2 text-white">
+            문의하기
+        </div>
+        <div class="bg-green-600 rounded p-2 text-white">
+            시작하기
+        </div>
+    </div>
+</div>
+</body>
+</html>

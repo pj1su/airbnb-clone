@@ -31,7 +31,7 @@ class HomeView(ListView):
     paginate_orphans = 5
     ordering = "created"
     context_object_name = "rooms"
-
+    # template_name = "safehomes.html"
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)
     #     now = timezone.now()
