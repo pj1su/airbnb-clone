@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET", "NTfF6fEHnYx^P6@HJx@K6M")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG"))
 
-ALLOWED_HOSTS = [".elasticbeanstalk.com", "127.0.0.1:8000"]
+ALLOWED_HOSTS = [".elasticbeanstalk.com"]
 
 
 # Application definition
