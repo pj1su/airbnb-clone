@@ -95,7 +95,7 @@ class SignUpView(FormView):
         if user is not None:
             login(self.request, user)
             # 이부분에 send_email할 수 있지만 이메일 변경이나 재사용을 고려해서 모델에 재사용가능한 코드를 만듬
-            user.verify_email()
+            # user.verify_email()
         return super().form_valid(form)
 
 
@@ -371,4 +371,3 @@ def switch_language(request):
         # response = HttpResponse(200)
         # response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang)
     return HttpResponse(200)
-
