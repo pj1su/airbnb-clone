@@ -33,6 +33,7 @@ urlpatterns = [
     path("lists/", include("lists.urls", namespace="lists")),
     path("admin/", admin.site.urls),
     path("sentry-debug/", trigger_error),
+    path("accounts/", include("allauth.urls")),
 ]
 # path(os.environ.get("DJANGO_ADMIN","admin/"), admin.site.urls),
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -9,7 +9,6 @@ from django.utils.html import strip_tags
 from django.template.loader import render_to_string
 from core import managers as core_managers
 
-
 class User(AbstractUser):
 
     """ Custom User Model """
@@ -48,6 +47,7 @@ class User(AbstractUser):
     )
 
     avatar = models.ImageField(upload_to="avatars", blank=True)
+    #django-imagekit 사용해서 용량 제한,포맷,압축 시켜줄 수 있다
     gender = models.CharField(
         _("gender"), choices=GENDER_CHOICES, max_length=10, blank=True
     )

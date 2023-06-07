@@ -39,5 +39,6 @@ class Command(BaseCommand):
             list_model = list_models.List.objects.get(pk=pk)
             to_add = rooms[random.randint(0, 5) : random.randint(6, 30)]
             list_model.rooms.add(*to_add)
+            # *를 한건 to_add에 리스트의 값들을 들고오기위해서
 
         self.stdout.write(self.style.SUCCESS(f"{number} {NAME} created!"))

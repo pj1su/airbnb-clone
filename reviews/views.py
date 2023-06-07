@@ -18,3 +18,4 @@ def create_review(request, room):
             review.save()
             messages.success(request, "Room reviewed")
             return redirect(reverse("rooms:detail", kwargs={"pk": room.pk}))
+            #  args = room.pk 이렇게 써도됨

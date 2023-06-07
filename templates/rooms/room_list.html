@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load socialaccount %}
+{% providers_media_js %}
 <!--1 block-->
 {% block page_name %}
     Home
@@ -41,8 +43,20 @@
 
     </div>
 
+<form method="POST" action="/accounts/google/login/">
+    {% csrf_token %}
+<button>google</button>
+</form>
+<a href="{% provider_login_url 'google' %}">google connect</a>
+{% for account in user.socialaccount_set.all %}
+<p><img width="50" height="50" src="{{ account.get_avatar_url }}"/></p>
 
-<a href="users/login.html">safehomes</a>
+<p>UID: <a href="{{ account.extra_data.link }}">{{ account.uid }}</a></p>
+
+<p>email: {{ account.extra_data.email }}</p>
+<p>Name: {{ account.extra_data.name }}</p>
+<p>Picture: <img sre="{{ account.extra_data.picture }}" width="100" height="100"></p>
+{% endfor %}
 
 {% endblock content %}
 

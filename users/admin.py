@@ -43,3 +43,4 @@ class CustomUserAdmin(UserAdmin):
         "email_secret",
         "login_method",
     )
+

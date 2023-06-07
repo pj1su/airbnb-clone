@@ -168,6 +168,13 @@ class SearchView(View):
 
         if country:
             form = forms.SearchForm(request.GET)
+            # GET하면 빈 양식 인스턴스를 만들고 렌더링할 템플릿 컨텍스트에 배치합니다. 이것은 우리가 URL을 처음 방문할 때 일어날 것으로 예상할 수 있는 것입니다.
+
+            # 요청 을 사용하여 양식이 제출 POST되면 보기는 다시 한 번 양식 인스턴스를 만들고 요청의 데이터로 채웁니다. 이것을 "양식에 데이터 바인딩"(이제 바인딩된 양식)이라고 합니다.form = NameForm(request.POST)
+
+            # 우리는 양식의 is_valid()메소드를 호출합니다. 그렇지 않은 경우 True양식이 있는 템플릿으로 돌아갑니다. 이번에는 양식이 더 이상 비어 있지( 바인딩 해제 )되지 않으므로 HTML 양식은 이전에 제출된 데이터로 채워지며 필요에 따라 편집 및 수정할 수 있습니다.
+
+            # is_valid()인 경우 이제 해당 속성 True에서 모든 검증된 양식 데이터를 찾을 수 있습니다 . cleaned_data이 데이터를 사용하여 데이터베이스를 업데이트하거나 HTTP 리디렉션을 브라우저에 보내기 전에 다음으로 이동할 위치를 알려주는 다른 처리를 수행할 수 있습니다.
 
             if form.is_valid():  # 폼에 에러가 하나도 없다면
                 # print(form.cleaned_data)
@@ -183,7 +190,7 @@ class SearchView(View):
                 host = form.cleaned_data.get("host")
                 amenity = form.cleaned_data.get("amenity")
                 facility = form.cleaned_data.get("facility")
-
+                print(amenity)
                 filter_args = {}
                 # print(form.cleaned_data)
                 if city != "Anywhere":

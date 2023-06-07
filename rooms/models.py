@@ -63,6 +63,9 @@ class Photo(core_models.TimeStampedModel):
         return self.caption
 
 
+# 원래 Room보다 위에 있으면 에러가 나오는데 "Room"처럼 스트링만 있으면 장고는 어떤 모델을 말하는지 알 수 있다
+
+
 class Room(core_models.TimeStampedModel):
 
     """ Room Model Definiton """
@@ -71,7 +74,7 @@ class Room(core_models.TimeStampedModel):
     description = models.TextField(max_length=140)
     country = CountryField()
     city = models.CharField(max_length=80)
-    price = models.IntegerField()
+    price = models.IntegerField()  # DemicalField는 소수점도 나옴
     address = models.CharField(max_length=140)
     guests = models.IntegerField(help_text="How many people will be staying?")
     beds = models.IntegerField()

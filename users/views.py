@@ -16,6 +16,7 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.decorators import login_required
 from config import settings
+# from allauth.socialaccount.providers.google.views
 
 # authenticate는 username이 필요하기때문에 username을 email이랑 같이 관리자패널에서 바꾸고 로그인
 from . import forms
@@ -57,6 +58,7 @@ class LoginView(mixins.LoggedOutOnlyView, FormView):
         email = form.cleaned_data.get("email")
         password = form.cleaned_data.get("password")
         user = authenticate(self.request, username=email, password=password)
+        print(user)
         if user is not None:
             login(self.request, user)
         return super().form_valid(form)
@@ -222,11 +224,11 @@ def kakao_callback(request):
         code = request.GET.get("code")
         REST_API_KEY = os.environ.get("KAKAO_ID")
         REDIRECT_URI = "http://127.0.0.1:8000/users/login/kakao/callback"
-        token_request = requests.get(
+        token_request = requests.post(
             f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={REST_API_KEY}&redirect_uri={REDIRECT_URI}&code={code}"
         )
-        # print(token_request.json())
         token_json = token_request.json()
+        # print(token_json)
         error = token_json.get("error", None)
         if error is not None:
             raise KakaoException("Can't get access token")
@@ -235,7 +237,7 @@ def kakao_callback(request):
             "https://kapi.kakao.com/v2/user/me",
             headers={"Authorization": f"Bearer {access_token}"},
         )
-        # print(profile_request.json())
+        print(profile_request.json())
         profile_json = profile_request.json()
         email = profile_json.get("kakao_account").get("email", None)
         if email is None:
@@ -243,6 +245,8 @@ def kakao_callback(request):
         properties = profile_json.get("properties")
         nickname = properties.get("nickname")
         profile_image = properties.get("profile_image")
+        print(profile_image)
+        # print(requests.get(profile_image).content)
         try:
             user = models.User.objects.get(email=email)
             if user.login_method != models.User.LOGIN_KAKAO:
@@ -259,6 +263,7 @@ def kakao_callback(request):
             user.save()
             if profile_image is not None:
                 photo_request = requests.get(profile_image)
+                print("포토포토포토포ㅓ토", photo_request)
                 # photo_request.content()  # json ,text도 아닌 0,1 과 같은 byte처럼 모든것을 의미
                 user.avatar.save(
                     f"{nickname}-avatar.jpg",
@@ -266,7 +271,7 @@ def kakao_callback(request):
                         photo_request.content
                     ),  # byte로 된건 불러올수 없어서 ContentFile로 사용
                 )
-        login(request, user)
+        login(request, user,backend='django.contrib.auth.backends.ModelBackend')
         messages.success(request, f"Welcome {user.first_name}님")
         return redirect(reverse("core:home"))
     except KakaoException as e:
@@ -290,7 +295,7 @@ class UpdateUserView(mixins.LoggedInOnlyView, SuccessMessageMixin, UpdateView):
         # "username",  username을 밑에 폼 벨리드로 인터셉트가능 이메일이랑 유저네임 같게 하고싶은데 유저들한테 안보이게 할려면
         "first_name",
         "last_name",
-        # "avatar",
+        "avatar",
         "gender",
         "bio",
         "birthdate",

@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET", "NTfF6fEHnYx^P6@HJx@K6M")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG"))
 
-ALLOWED_HOSTS = [".elasticbeanstalk.com", "localhost", "127.0.0.1:8000"]
+ALLOWED_HOSTS = [".elasticbeanstalk.com", "*"]
 
 
 # Application definition
@@ -39,6 +39,13 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    
+    'allauth.socialaccount.providers.google',
 ]
 
 THIRD_PARTY_APPS = ["django_countries", "django_seed", "storages"]
@@ -151,6 +158,7 @@ USE_TZ = False
 STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 AUTH_USER_MODEL = "users.User"
 
@@ -160,11 +168,18 @@ MEDIA_URL = "/media/"
 
 # Email Configuration
 
-EMAIL_HOST = "smtp.mailgun.org"
+# EMAIL_HOST = "smtp.mailgun.org"
+# EMAIL_PORT = "587"
+# EMAIL_HOST_USER = os.environ.get("MAILGUN_USERNAME")
+# EMAIL_HOST_PASSWORD = os.environ.get("MAILGUN_PASSWORD")
+# EMAIL_FROM = "sexy-guy@sandbox5038fcc9ea364edeacd0078920093129.mailgun.org"
+EMAIL_HOST = "smtp.google.com"
 EMAIL_PORT = "587"
-EMAIL_HOST_USER = os.environ.get("MAILGUN_USERNAME")
-EMAIL_HOST_PASSWORD = os.environ.get("MAILGUN_PASSWORD")
-EMAIL_FROM = "sexy-guy@sandbox5038fcc9ea364edeacd0078920093129.mailgun.org"
+EMAIL_HOST_USER = 'wltn8223@gmail.com'
+EMAIL_HOST_PASSWORD = 'park5067@@'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_USE_TLS = False
+
 
 LOGIN_URL = "/users/login"
 
@@ -213,8 +228,20 @@ if not DEBUG:
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
         # We recommend adjusting this value in production.
-        traces_sample_rate=1.0,
+        traces_sample_rate=0.5,
         # If you wish to associate users to errors (assuming you are using
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True,
     )
+
+
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+SITE_ID = 1
+LOGIN_REDIRECT_URL = "/"
